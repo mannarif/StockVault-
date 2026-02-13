@@ -22,7 +22,7 @@ export default function App() {
   return (
     <div style={{ padding: 20 }}>
       <h2>📊 StockVault</h2>
-
+<p>{import.meta.env.VITE_FIREBASE_PROJECT_ID}</p>
       <p>
         <b>Status:</b>{" "}
         {user ? "LOGGED IN ✅" : "NOT LOGGED IN ❌"}
