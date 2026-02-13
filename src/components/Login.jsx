@@ -1,31 +1,29 @@
 import { auth, provider } from "../config/firebaseConfig";
 import {
   signInWithRedirect,
-  getRedirectResult,
-  signOut
+  signOut,
+  onAuthStateChanged
 } from "firebase/auth";
 import { useEffect } from "react";
 
 export default function Login({ user, setUser }) {
 
   useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) {
-          setUser(result.user);
-        }
-      })
-      .catch((error) => {
-        console.error("Auth error:", error);
-      });
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsub();
   }, []);
 
   return user ? (
     <button onClick={() => signOut(auth)}>Logout</button>
   ) : (
-    <button
-      onClick={() => signInWithRedirect(auth, provider)}
-    >
+    <button onClick={() => signInWithRedirect(auth, provider)}>
       Login with Google
     </button>
   );
