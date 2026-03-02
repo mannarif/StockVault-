@@ -1,30 +1,20 @@
-import { auth, provider } from "../config/firebaseConfig";
 import {
-  signInWithRedirect,
-  signOut,
-  onAuthStateChanged
-} from "firebase/auth";
-import { useEffect } from "react";
+  signInWithPopup,
+  setPersistence,
+  browserLocalPersistence,
+} from 'firebase/auth';
+import { auth, provider } from '../firebase/firebase';
 
-export default function Login({ user, setUser }) {
+export default function Login() {
+  const login = async () => {
+    try {
+      await setPersistence(auth, browserLocalPersistence);
+      await signInWithPopup(auth, provider);
+      console.log('Login success');
+    } catch (e) {
+      console.error('Login error', e);
+    }
+  };
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => unsub();
-  }, []);
-
-  return user ? (
-    <button onClick={() => signOut(auth)}>Logout</button>
-  ) : (
-    <button onClick={() => signInWithRedirect(auth, provider)}>
-      Login with Google
-    </button>
-  );
+  return <button onClick={login}>Login with Google</button>;
 }
