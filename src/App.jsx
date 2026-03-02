@@ -1,48 +1,42 @@
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./config/firebaseConfig";
-import Login from "./components/Login";
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, logoutUser } from './config/firebaseConfig';
+import Login from './components/Login';
+import AddStock from './components/AddStock';
+import StockList from './components/StockList';
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      console.log("AUTH STATE:", u);
+    const unSub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
     });
-
-    return () => unsub();
+    return () => unSub();
   }, []);
 
   if (loading) return <p>Checking login...</p>;
 
+  if (user) {
+    return (
+      <div className="container">
+        <h2>📈 Stock Tracker</h2>
+        <button className="logout-btn" onClick={logoutUser}>
+          Logout
+        </button>
+        <AddStock />
+        <StockList />
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: 20 }}>
       <h2>📊 StockVault</h2>
-<p>{import.meta.env.VITE_FIREBASE_PROJECT_ID}</p>
-      <p>
-        <b>Status:</b>{" "}
-        {user ? "LOGGED IN ✅" : "NOT LOGGED IN ❌"}
-      </p>
-
+      <p>{import.meta.env.VITE_FIREBASE_PROJECT_ID}</p>
       <Login user={user} setUser={setUser} />
-
-      {user && (
-        <pre style={{ fontSize: 12 }}>
-          {JSON.stringify(
-            {
-              uid: user.uid,
-              email: user.email,
-              name: user.displayName,
-            },
-            null,
-            2
-          )}
-        </pre>
-      )}
     </div>
   );
-                 }
+}
