@@ -3,7 +3,7 @@ import {
   setPersistence,
   browserLocalPersistence,
 } from 'firebase/auth';
-import { auth, provider } from '../firebase/firebase';
+import { auth, provider } from '../config/firebaseConfig';
 
 export default function Login() {
   const login = async () => {
